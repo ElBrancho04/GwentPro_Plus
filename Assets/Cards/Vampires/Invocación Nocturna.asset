@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9139b60a6b2dfe84ebd148441f20cff8, type: 3}
+  m_Name: "Invocaci\xF3n Nocturna"
+  m_EditorClassIdentifier: 
+  cardImage: {fileID: 21300000, guid: cdb1b782270ce3542a2fe36a4b6d1b11, type: 3}
+  id: 14
+  cardName: "Invocaci\xF3n Nocturna"
+  cardDescription: Puede poner un aumento de 2 en una fila propia.
+  isGold: 0
+  cardType: 1
+  isActive: 0
+  player: 1
+  efectFactor: 2
+  powerVar: 0
+  playEfect: 0
+  actPower: 0
+  aumPower: 0
+  aument: 1
+  weather: 0
+  decrs: 0
+  melee: 0
+  ranged: 0
+  siege: 0
+  attackPower: 0
