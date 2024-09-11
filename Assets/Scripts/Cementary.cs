@@ -5,68 +5,74 @@ using UnityEngine;
 
 public class Cementary : MonoBehaviour
 {
-    public GameManager gameManager;
     public int player;
-    public AumentZone m;
-    public AumentZone r;
-    public AumentZone s;
-    public WeatherField weatherField;
-    public TextMeshProUGUI cant;
+    public List<CardData> exitingCards;
+    public TMP_Text text;
 
-    void Update()
+    void Start ()
     {
-        int cardsInField = 0;
-        int cardsInCementary = 0;
-
-        if (m.card != null)
-        cardsInField++;
-        if (r.card != null)
-        cardsInField++;
-        if (s.card != null)
-        cardsInField++;
-
-        for (int i = 0; i < weatherField.cards.Count; i++)
+        GameManager gameManager = FindObjectOfType<GameManager>();
+        exitingCards = player == 1? new List<CardData>(gameManager.playerDeck1.deck): new List<CardData>(gameManager.playerDeck2.deck);
+    }
+    void LateUpdate()
+    {
+        List<CardData> deadCards = new List<CardData>(exitingCards);
+        List<string> cardsInGame = new List<string>();
+        if (player == 1)
         {
-            if (weatherField.cards[i].player == player)
-            cardsInField++;
+            foreach (var card in Context.HandOfPlayer1)
+            {
+                cardsInGame.Add(card.cardName);
+            }
+            foreach (var card in Context.DeckOfPlayer1)
+            {
+                cardsInGame.Add(card.cardName);
+            }
+            foreach (var card in Context.FieldOfPlayer1)
+            {
+                cardsInGame.Add(card.cardName);
+            }
+        }
+        else if (player == 2)
+        {
+            foreach (var card in Context.HandOfPlayer2)
+            {
+                cardsInGame.Add(card.cardName);
+            }
+            foreach (var card in Context.DeckOfPlayer2)
+            {
+                cardsInGame.Add(card.cardName);
+            }
+            foreach (var card in Context.FieldOfPlayer2)
+            {
+                cardsInGame.Add(card.cardName);
+            }
+        }
+        foreach (var card in FindObjectOfType<WeatherField>().cards)
+        {
+            cardsInGame.Add(card.cardName);
+        }
+
+        foreach (var name in cardsInGame)
+        {
+            for (int i = 0; i < deadCards.Count; i++)
+            {
+                if (deadCards[i].cardName == name)
+                {
+                    deadCards.RemoveAt(i);
+                    break;
+                }
+            }
         }
 
         if (player == 1)
         {
-            for (int i = 0; i < 3; i++)
-            {
-                for (int j = 0; j < gameManager.tablero[i].cards.Count; j++)
-                {
-                    cardsInField++;
-                }
-            }
-            for (int i = 0; i < gameManager.playerHand1.cards.Count; i++)
-            {
-                cardsInField++;
-            }
-
-            gameManager.roundWinnerCalculator.cardsInField1 = cardsInField - gameManager.playerHand1.cards.Count;
-            cardsInCementary = 31 - gameManager.playerDeck1.deck.Count - cardsInField;
+            Context.GraveyardOfPlayer1 = new List<CardData>(deadCards);
         }
-
-        if (player == 2)
+        else if (player == 2)
         {
-            for (int i = 3; i < 6; i++)
-            {
-                for (int j = 0; j < gameManager.tablero[i].cards.Count; j++)
-                {
-                    cardsInField++;
-                }
-            }
-            for (int i = 0; i < gameManager.playerHand2.cards.Count; i++)
-            {
-                cardsInField++;
-            }
-
-            gameManager.roundWinnerCalculator.cardsInField2 = cardsInField - gameManager.playerHand2.cards.Count;
-            cardsInCementary = 31 - gameManager.playerDeck2.deck.Count - cardsInField;
+            Context.GraveyardOfPlayer2 = new List<CardData>(deadCards);
         }
-
-        cant.text = "" + cardsInCementary;
+        text.text = deadCards.Count.ToString();
     }
 }

@@ -36,7 +36,12 @@ public class Efects : MonoBehaviour
         gameManager.cardToPlayEfct = null;
         aument.card = card;
         delCard.card = card;
-
+        if (cardID == -1)
+        {
+            Evaluator evaluator = new Evaluator((CreatedCard)card, FindAnyObjectByType<Context>());
+            evaluator.Evaluate();
+            gameManager.playerTurn = 2;
+        }
         if (cardID == 3 || cardID == 8 || cardID == 18 || cardID == 23 || cardID == 6 || cardID == 22) //Aumentar una fila
         {
             gameManager.playerTurn = 0;
