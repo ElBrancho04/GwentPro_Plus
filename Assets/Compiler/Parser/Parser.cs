@@ -657,7 +657,10 @@ public class Parser
         }
         var left = new ASTNode(NodeType.Identifier, currentToken.Line, currentToken.Pos, currentToken.Value);
         Advance();
-
+        if (currTokenVal() == "++" || currTokenVal() == "--")
+        {
+            return new UnaryNode(NodeType.Assigment, currTokenVal(), line, pos, left);
+        }
         if (currTokenVal() != "=" && currTokenVal() != "+=" && currTokenVal() != "-=")
         {
             ReportError("Se esperaba '=' o '+=' o '-=' en la asignación");
@@ -673,7 +676,7 @@ public class Parser
     }
     private ASTNode ParseFunctStatement()
     {
-        var functionCall = new BinaryNode(NodeType.FunctionCall, "", currentToken.Line, currentToken.Pos, new ASTNode(NodeType.Identifier, currentToken.Line, currentToken.Pos, currentToken.Value));
+        var functionCall = new ASTNode(NodeType.Identifier, currentToken.Line, currentToken.Pos, currentToken.Value);
         Advance();
         while (currTokenVal() == ".")
         {
@@ -711,8 +714,15 @@ public class Parser
             functionCall = new BinaryNode(NodeType.PropertyAcces, "", currentToken.Line, currentToken.Pos, functionCall, new ASTNode(NodeType.Identifier, currentToken.Line, currentToken.Pos, currentToken.Value));
             Advance();
         }
-        if (currTokenVal() != "-=" && currTokenVal() != "==" && currTokenVal() != "+=")
+        if (currTokenVal() != "-=" && currTokenVal() != "=" && currTokenVal() != "+=" && currTokenVal() != "--" && currTokenVal() != "++")
             ReportError("Token inesperado, se esperaba un '.' o '('");
+        else
+        {
+            var assigmentType = currTokenVal();
+            Advance();
+            ASTNode assignmentNode = assigmentType == "++" || assigmentType == "--"? new UnaryNode(NodeType.Assigment, assigmentType, currentToken.Line, currentToken.Pos, functionCall): new BinaryNode(NodeType.Assigment, assigmentType, currentToken.Line, currentToken.Pos, functionCall, ParseExpression());
+            return assignmentNode;
+        }
         return functionCall;
     }
 
@@ -982,17 +992,17 @@ public class Parser
                         Advance();
                         return identifierNode;
                     }
-                    var funtionName = new ASTNode(NodeType.Identifier, currentToken.Line, currentToken.Pos, currentToken.Value);
+                    var funtionName = new BinaryNode(NodeType.Function, "", currentToken.Line, currentToken.Pos, new ASTNode(NodeType.Identifier, currentToken.Line, currentToken.Pos, currentToken.Value));
                     Advance();
                     Advance();
                     if (currentToken.TokenType == TokenType.Identifier)
                     {
-                        funtionName = new BinaryNode(NodeType.Function, "", currentToken.Line, currentToken.Pos, funtionName, new ASTNode(NodeType.Identifier, currentToken.Line, currentToken.Pos, currentToken.Value));
+                        funtionName.Right = new ASTNode(NodeType.Identifier, currentToken.Line, currentToken.Pos, currentToken.Value);
                         Advance();
                     }
                     else if (currentToken.TokenType == TokenType.Number)
                     {
-                        funtionName = new BinaryNode(NodeType.Function, "", currentToken.Line, currentToken.Pos, funtionName, new ASTNode(NodeType.Literal, currentToken.Line, currentToken.Pos, currentToken.Value));
+                        funtionName.Right = new ASTNode(NodeType.Literal, currentToken.Line, currentToken.Pos, currentToken.Value);
                         Advance();
                     }
                     identifierNode = new BinaryNode(NodeType.FunctionCall, "", currentToken.Line, currentToken.Pos, identifierNode, funtionName);
@@ -1610,6 +1620,9 @@ public class Parser
                     }
                     return Effect;
                 }
+                if (currTokenVal() == "true" || currTokenVal() == "false")
+                parameter.Child = new ASTNode(NodeType.Literal, currentToken.Line, currentToken.Pos, bool.Parse((string)currentToken.Value));
+                else
                 parameter.Child = new ASTNode(NodeType.Literal, currentToken.Line, currentToken.Pos, currentToken.Value);
                 Effect.AddChild(parameter);
                 Advance();

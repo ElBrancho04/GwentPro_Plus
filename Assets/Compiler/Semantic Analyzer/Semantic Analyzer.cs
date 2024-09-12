@@ -26,18 +26,14 @@ class SemanticAnalyzer
         string errors = "";
 
         List<Token> tokens = new Lexer(Source).Tokenize();
-        foreach (var item in tokens)
-        {
-            Debug.Log(item);
-        }
         Parser parser = new Parser (tokens);
         ASTNode program = parser.Parse();
+
         if (parser.Errors.Count > 0)
         {
             errors = "No se pudo compilar el texto, tienes los siguientes errores gramaticales:";
             foreach (var item in parser.Errors)
             {
-                //Debug.Log(item);
                 errors += "\n" + item;
             }
             return errors;

@@ -6,6 +6,10 @@ public class ASTNode
     public int Line{get;}
     public int Pos{get;}
     public object Value{get;}
+    public override string ToString()
+    {
+        return "" + NodeType + " " + Value;
+    }
 
     public ASTNode (NodeType nodeType, int line, int pos, object value)
     {
